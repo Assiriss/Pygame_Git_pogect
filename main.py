@@ -125,9 +125,9 @@ class Gameboard(Board):
                         newenem.obozn = 'd'
                         newenem.allhealth = 100
                         newenem.health = newenem.health
-                        newenem.range = 0
-                        newenem.damage = 0
-                        newenem.defend = 0
+                        newenem.range = 1
+                        newenem.damage = 1
+                        newenem.defend = 1
                     self.enemies[(zi, i)] = newenem
                     self.boardshow[i][zi] = 'e'
                     g.append('e')
@@ -137,7 +137,7 @@ class Gameboard(Board):
                         self.playerx = zi
                         self.playery = i
                         self.boardshow[i][zi] = '@'
-                        self.hero.pos = (i, zi)
+                        self.hero.pos = (zi, i)
                         for i1 in range(self.hero.range * -1, self.hero.range + 1):
                             if 0 <= i1 + i <= self.height - 1:
                                 for j in range(-1, 2):
@@ -254,34 +254,81 @@ class Gameboard(Board):
             self.height * self.cell_size + self.top + 65, self.height * self.cell_size + self.top + 65 + 10):
             self.butgoactive = False
             self.butweap1active = False
-            self.butnextactive = True
-            cell_coords = [self.playerx, self.playery]
-            for i in range(self.height):
-                for j in range(self.width):
-                    if self.boardshow[i][j] == 'e':
-                        pass
-                    elif self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
-                        self.boardshow[i][j] = 'e'
-                    else:
-                        self.boardshow[i][j] = '0'
-                    if self.board[i][j] != 'e' and self.board[i][j] != '@':
-                        self.board[i][j] = '.'
-            self.boardshow[self.playery][self.playerx] = 'b'
-            self.boardshow[cell_coords[1]][cell_coords[0]] = '@'
-            self.board[self.playery][self.playerx] = '.'
-            self.board[cell_coords[1]][cell_coords[0]] = '@'
-            for i1 in range(self.hero.range * -1, self.hero.range + 1):
-                if 0 <= i1 + cell_coords[1] <= self.height - 1:
-                    for j in range(-1, 2):
-                        if 0 <= j + cell_coords[0] <= self.width - 1:
-                            if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != '@' and \
-                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != 'e':
-                                self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'b'
-                            if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e':
-                                self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e1'
-                            if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e2':
-                                self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e12'
+            if self.butnextactive:
+                self.butnextactive = False
+            else:
+                self.butnextactive = True
+            if self.butnextactive:
+                neenemies = self.enemies.copy()
+                self.enemies.clear()
+                for elem in neenemies:
+                    evildude = neenemies[elem]
+                    sp = []
+                    pos_x = evildude.pos[0]
+                    pos_y = evildude.pos[1]
+                    kol = evildude.range
+                    prx = pos_x
+                    pry = pos_y
+                    while (pos_x, pos_y) != (self.playerx, self.playery) or kol > 0:
 
+                        prx = pos_x
+                        pry = pos_y
+                        if pos_x != self.playerx:
+                            pos_x += (self.playerx - pos_x) // abs(self.playerx - pos_x)
+                        if pos_y != self.playery:
+                            pos_y += (self.playery - pos_y) // abs(self.playery - pos_y)
+                        kol -= 1
+                        print(pos_x, pos_y)
+                    print(self.hero.pos)
+                    if (pos_x, pos_y) == (self.playerx, self.playery):
+                        print(evildude.pos[0], evildude.pos[1])
+                        self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
+                        self.board[evildude.pos[1]][evildude.pos[0]] = '.'
+                        evildude.pos = (prx, pry)
+                        self.enemies[(prx, pry)] = evildude
+                        print(prx, pry)
+                        self.board[pry][prx] = 'e'
+                        self.boardshow[pry][prx] = 'e'
+                        self.hero.health -= evildude.damage
+                    else:
+                        print(evildude.pos[0], evildude.pos[1])
+                        self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
+                        self.board[evildude.pos[1]][evildude.pos[0]] = '.'
+                        evildude.pos = (pos_x, pos_y)
+                        print(pos_x, pos_y)
+                        self.enemies[(pos_x, pos_y)] = evildude
+                        self.board[pos_y][pos_x] = 'e'
+                        self.boardshow[pos_y][pos_x] = 'e'
+                for i in range(len(self.boardshow)):
+                    for j in self.boardshow[i]:
+                        print(j, end='')
+                    print()
+                cell_coords = [self.playerx, self.playery]
+                for i in range(self.height):
+                    for j in range(self.width):
+                        if self.boardshow[i][j] == 'e':
+                            pass
+                        elif self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
+                            self.boardshow[i][j] = 'e'
+                        else:
+                            self.boardshow[i][j] = '0'
+                        if self.board[i][j] != 'e' and self.board[i][j] != '@':
+                            self.board[i][j] = '.'
+                self.boardshow[self.playery][self.playerx] = 'b'
+                self.boardshow[cell_coords[1]][cell_coords[0]] = '@'
+                self.board[self.playery][self.playerx] = '.'
+                self.board[cell_coords[1]][cell_coords[0]] = '@'
+                for i1 in range(self.hero.range * -1, self.hero.range + 1):
+                    if 0 <= i1 + cell_coords[1] <= self.height - 1:
+                        for j in range(-1, 2):
+                            if 0 <= j + cell_coords[0] <= self.width - 1:
+                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != '@' and \
+                                        self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != 'e':
+                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'b'
+                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e':
+                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e1'
+                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e2':
+                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e12'
         elif mouse_pos[0] in range(self.left + self.butweap1cord, self.left + self.butweap1cord + 200) and mouse_pos[1]\
                 in range(self.height * self.cell_size + self.top + 25, self.height * self.cell_size + self.top + 75):
             self.butgoactive = False
@@ -305,6 +352,32 @@ class Gameboard(Board):
                 self.butgoactive = False
                 self.playerx = cell_coords[0]
                 self.playery = cell_coords[1]
+                self.hero.pos = (self.playerx, self.playery)
+                for i in range(self.height):
+                    for j in range(self.width):
+                        if self.boardshow[i][j] == 'e':
+                            pass
+                        elif self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
+                            self.boardshow[i][j] = 'e'
+                        else:
+                            self.boardshow[i][j] = '0'
+                        if self.board[i][j] != 'e' and self.board[i][j] != '@':
+                            self.board[i][j] = '.'
+                self.boardshow[self.playery][self.playerx] = 'b'
+                self.boardshow[cell_coords[1]][cell_coords[0]] = '@'
+                self.board[self.playery][self.playerx] = '.'
+                self.board[cell_coords[1]][cell_coords[0]] = '@'
+                for i1 in range(self.hero.range * -1, self.hero.range + 1):
+                    if 0 <= i1 + cell_coords[1] <= self.height - 1:
+                        for j in range(-1, 2):
+                            if 0 <= j + cell_coords[0] <= self.width - 1:
+                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != '@' and \
+                                        self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != 'e':
+                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'b'
+                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e':
+                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e1'
+                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e2':
+                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e12'
             elif self.butweap1active and (self.boardshow[cell_coords[1]][cell_coords[0]] == 'e1' or
                                        self.boardshow[cell_coords[1]][cell_coords[0]] == 'e12'):
                 self.enemies[(cell_coords[0], cell_coords[1])].health -= self.hero.damage
