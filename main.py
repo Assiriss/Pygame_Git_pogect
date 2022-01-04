@@ -140,12 +140,15 @@ class Gameboard(Board):
                         self.hero.pos = (zi, i)
                         for i1 in range(self.hero.range * -1, self.hero.range + 1):
                             if 0 <= i1 + i <= self.height - 1:
-                                for j in range(-1, 2):
-                                    if 0 <= j + zi <= self.width - 1:
-                                        if self.boardshow[i1 + i][j + zi] != '@' and self.boardshow[i1 + i][j + zi] != 'e':
-                                            self.boardshow[i1 + i][j + zi] = 'b'
-                                        elif self.boardshow[i1 + i][j + zi] == 'e':
+                                for jk in range(-1, 2):
+                                    if 0 <= jk + zi <= self.width - 1:
+                                        if self.boardshow[i1 + i][jk + zi] == '@':
+                                            self.boardshow[i1 + i][jk + zi] = 'b'
+                                        elif self.boardshow[i1 + i][jk + zi] == 'e' or self.boardshow[i1 + i][jk + zi] == 'e2':
                                             self.boardshow = 'e1'
+                                        else:
+                                            self.boardshow[i1 + i][jk + zi] = 'b'
+
 
 
 
@@ -269,7 +272,7 @@ class Gameboard(Board):
                     kol = evildude.range
                     prx = pos_x
                     pry = pos_y
-                    while (pos_x, pos_y) != (self.playerx, self.playery) or kol > 0:
+                    while (pos_x, pos_y) != (self.playerx, self.playery) and kol > 0:
 
                         prx = pos_x
                         pry = pos_y
@@ -353,31 +356,23 @@ class Gameboard(Board):
                 self.playerx = cell_coords[0]
                 self.playery = cell_coords[1]
                 self.hero.pos = (self.playerx, self.playery)
+                print(self.hero.pos)
                 for i in range(self.height):
                     for j in range(self.width):
-                        if self.boardshow[i][j] == 'e':
-                            pass
-                        elif self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
-                            self.boardshow[i][j] = 'e'
-                        else:
-                            self.boardshow[i][j] = '0'
-                        if self.board[i][j] != 'e' and self.board[i][j] != '@':
-                            self.board[i][j] = '.'
-                self.boardshow[self.playery][self.playerx] = 'b'
-                self.boardshow[cell_coords[1]][cell_coords[0]] = '@'
-                self.board[self.playery][self.playerx] = '.'
-                self.board[cell_coords[1]][cell_coords[0]] = '@'
-                for i1 in range(self.hero.range * -1, self.hero.range + 1):
-                    if 0 <= i1 + cell_coords[1] <= self.height - 1:
-                        for j in range(-1, 2):
-                            if 0 <= j + cell_coords[0] <= self.width - 1:
-                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != '@' and \
-                                        self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] != 'e':
-                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'b'
-                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e':
-                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e1'
-                                if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e2':
-                                    self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e12'
+                        if self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
+                            print(j, i, end='<===== \n')
+                            print()
+                            if abs(self.playery - i) > self.hero.range or abs(self.playerx - j) > self.hero.range:
+                                self.boardshow[i][j] = 'e'
+
+                        if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
+                            if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
+                                self.boardshow[i][j] = 'e1'
+
+                for i in range(len(self.boardshow)):
+                    for j in range(len(self.boardshow[i])):
+                        print(self.boardshow[i][j], end='')
+                    print()
             elif self.butweap1active and (self.boardshow[cell_coords[1]][cell_coords[0]] == 'e1' or
                                        self.boardshow[cell_coords[1]][cell_coords[0]] == 'e12'):
                 self.enemies[(cell_coords[0], cell_coords[1])].health -= self.hero.damage
