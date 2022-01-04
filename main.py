@@ -109,6 +109,8 @@ class Gameboard(Board):
         self.hero = Player(0, 0)
         self.playerx = 0
         self.playery = 0
+        self.weap2range = 2
+        self.weap2mana = 10
         self.playercords = []
         self.left = 25
         self.top = 120
@@ -144,15 +146,24 @@ class Gameboard(Board):
                                     if 0 <= jk + zi <= self.width - 1:
                                         if self.boardshow[i1 + i][jk + zi] == '@':
                                             self.boardshow[i1 + i][jk + zi] = 'b'
-                                        elif self.boardshow[i1 + i][jk + zi] == 'e' or self.boardshow[i1 + i][jk + zi] == 'e2':
+                                        elif self.boardshow[i1 + i][jk + zi] == 'e' or self.boardshow[i1 + i][jk + zi]\
+                                                == 'e2':
                                             self.boardshow = 'e1'
                                         else:
                                             self.boardshow[i1 + i][jk + zi] = 'b'
 
-
-
-
             self.board.append(g)
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
+                    if abs(self.playery - i) > self.hero.range or abs(self.playerx - j) > self.hero.range:
+                        self.boardshow[i][j] = 'e'
+                if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
+                    if abs(self.playery - i) <= self.weap2range and abs(self.playerx - j) <= self.weap2range:
+                        self.boardshow[i][j] = 'e3'
+                    if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
+                        self.boardshow[i][j] = 'e1'
+
         self.butgosize = 40
         self.butgoactive = False
         self.butgoused = False
@@ -161,8 +172,9 @@ class Gameboard(Board):
         self.butweap1active = False
         self.butweapused = False
         self.butweap1cord = 250
-        self.butweap2cord = 130
+        self.butweap2cord = 500
         self.butweap2active = False
+
         self.butnextsize = 40
         self.butnextactive = False
         self.butnextcord = 180
@@ -184,23 +196,34 @@ class Gameboard(Board):
                 if self.butgoactive and self.boardshow[j // self.cell_size][i // self.cell_size] == 'bl':
                     pygame.draw.rect(screen, (0, 0, 255),
                                      (i + self.left, j + self.top, self.cell_size, self.cell_size))
+                if self.butweap2active and (self.boardshow[j // self.cell_size][i // self.cell_size] == 'e1' or
+                                            self.boardshow[j // self.cell_size][i // self.cell_size] == 'e12' or
+                self.boardshow[j // self.cell_size][i // self.cell_size] == 'e32' or
+                                            self.boardshow[j // self.cell_size][i // self.cell_size] == 'e3'):
+                    pygame.draw.rect(screen, (153, 0, 0), (i + self.left, j + self.top, self.cell_size,
+                                                           self.cell_size))
                 if self.butweap1active and (self.boardshow[j // self.cell_size][i // self.cell_size] == 'e1' or
                                             self.boardshow[j // self.cell_size][i // self.cell_size] == 'e12'):
-                    pygame.draw.rect(screen, (153, 0, 0),  (i + self.left, j + self.top, self.cell_size, self.cell_size))
+                    pygame.draw.rect(screen, (153, 0, 0),  (i + self.left, j + self.top, self.cell_size,
+                                                            self.cell_size))
                 if self.boardshow[j // self.cell_size][i // self.cell_size] == 'e2' or \
-                        self.boardshow[j // self.cell_size][i // self.cell_size] == 'e12':
-                    pygame.draw.rect(screen, (255, 102, 0), (i + self.left, j + self.top, self.cell_size, self.cell_size))
+                        self.boardshow[j // self.cell_size][i // self.cell_size] == 'e12' or \
+                        self.boardshow[j // self.cell_size][i // self.cell_size] == 'e32':
+                    pygame.draw.rect(screen, (255, 102, 0), (i + self.left, j + self.top, self.cell_size,
+                                                             self.cell_size))
                     health = self.enemies[(i // self.cell_size, j // self.cell_size)].health
                     alhealth = self.enemies[(i // self.cell_size, j // self.cell_size)].allhealth
-                    pygame.draw.rect(screen, (0, 0, 0), (15, 15, alhealth * 2, 30))
+                    pygame.draw.rect(screen, (255, 255, 255), (15, 15, alhealth * 2, 30))
                     pygame.draw.rect(screen, (255, 0, 0), (15, 15, health * 2, 30))
-                if self.boardshow[j // self.cell_size][i // self.cell_size] == '1' or self.boardshow[j // self.cell_size][i // self.cell_size] == 'bl' and not self.butgoactive:
+                if self.boardshow[j // self.cell_size][i // self.cell_size] == '1' or \
+                        self.boardshow[j // self.cell_size][i // self.cell_size] == 'bl' and not self.butgoactive:
                     pygame.draw.rect(screen, (255, 215, 0),
                                      (i + self.left, j + self.top, self.cell_size, self.cell_size))
                 if self.board[j // self.cell_size][i // self.cell_size] == '@':
                     pygame.draw.circle(screen, (255, 0, 255), (i + self.left + self.cell_size // 2, j + self.top +
                                                                self.cell_size // 2), 25)
-                if self.board[j // self.cell_size][i // self.cell_size] != '@' and self.board[j // self.cell_size][i // self.cell_size] != '.':
+                if self.board[j // self.cell_size][i // self.cell_size] != '@' and\
+                        self.board[j // self.cell_size][i // self.cell_size] != '.':
                     pygame.draw.circle(screen, (0, 255, 255), (i + self.left + self.cell_size // 2, j + self.top +
                                                                self.cell_size // 2), 25)
                 pygame.draw.rect(screen, (255, 255, 255),
@@ -230,11 +253,20 @@ class Gameboard(Board):
             pygame.draw.rect(screen, (255, 255, 0), ((self.left + 10, self.height * self.cell_size + self.top + 65,
                                                     self.healthbar, 10)))
         if not self.butweap1active:
-            pygame.draw.rect(screen, (255, 0, 0), (self.left + self.butweap1cord, self.height * self.cell_size + self.top +
+            pygame.draw.rect(screen, (255, 0, 0), (self.left + self.butweap1cord, self.height * self.cell_size +
+                                                   self.top +
                                                    25, 200, 50))
         else:
             pygame.draw.rect(screen, (255, 255, 0),
                              (self.left + self.butweap1cord, self.height * self.cell_size + self.top +
+                              25, 200, 50))
+        if not self.butweap2active:
+            pygame.draw.rect(screen, (255, 0, 0),
+                             (self.left + self.butweap2cord, self.height * self.cell_size + self.top +
+                              25, 200, 50))
+        else:
+            pygame.draw.rect(screen, (255, 255, 0),
+                             (self.left + self.butweap2cord, self.height * self.cell_size + self.top +
                               25, 200, 50))
 
     def get_cell(self, mouse_pos):
@@ -257,6 +289,7 @@ class Gameboard(Board):
             self.height * self.cell_size + self.top + 65, self.height * self.cell_size + self.top + 65 + 10):
             self.butgoactive = False
             self.butweap1active = False
+            self.butweap2active = False
             if self.butnextactive:
                 self.butnextactive = False
             else:
@@ -303,9 +336,12 @@ class Gameboard(Board):
                         self.board[pos_y][pos_x] = 'e'
                         self.boardshow[pos_y][pos_x] = 'e'
                 for i in range(len(self.boardshow)):
-                    for j in self.boardshow[i]:
-                        print(j, end='')
-                    print()
+                    for j in range(len(self.boardshow[i])):
+                        if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
+                            if abs(self.playery - i) <= self.weap2range and abs(self.playerx - j) <= self.weap2range:
+                                self.boardshow[i][j] = 'e3'
+                            if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
+                                self.boardshow[i][j] = 'e1'
                 cell_coords = [self.playerx, self.playery]
                 for i in range(self.height):
                     for j in range(self.width):
@@ -341,6 +377,20 @@ class Gameboard(Board):
             else:
                 self.butweap1active = True
 
+        elif mouse_pos[0] in range(
+                self.left + self.butweap2cord,
+                                   self.left + self.butweap2cord + 200) and mouse_pos[1] in range(
+            self.height * self.cell_size + self.top +
+                              25, self.height * self.cell_size + self.top + 75):
+            self.butweap1active = False
+            self.butgoactive = False
+            self.butnextactive = False
+            if self.butweap2active:
+                self.butweap2active = False
+            else:
+                self.butweap2active = True
+
+
 
 
     def on_click(self, cell_coords):
@@ -369,12 +419,31 @@ class Gameboard(Board):
                             if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
                                 self.boardshow[i][j] = 'e1'
 
+                        if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
+                            if abs(self.playery - i) <= self.weap2range and abs(self.playerx - j) <= self.weap2range:
+                                self.boardshow[i][j] = 'e3'
+                            if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
+                                self.boardshow[i][j] = 'e1'
+
                 for i in range(len(self.boardshow)):
                     for j in range(len(self.boardshow[i])):
                         print(self.boardshow[i][j], end='')
                     print()
             elif self.butweap1active and (self.boardshow[cell_coords[1]][cell_coords[0]] == 'e1' or
                                        self.boardshow[cell_coords[1]][cell_coords[0]] == 'e12'):
+                self.enemies[(cell_coords[0], cell_coords[1])].health -= self.hero.damage
+                print('ouch', self.enemies[(cell_coords[0], cell_coords[1])].health)
+                self.butweap1active = False
+                if self.enemies[(cell_coords[0], cell_coords[1])].health <= 0:
+                    del self.enemies[(cell_coords[0], cell_coords[1])]
+                    self.boardshow[cell_coords[1]][cell_coords[0]] = '0'
+                    self.board[cell_coords[1]][cell_coords[0]] = '.'
+                self.get_cell((self.left + 11, self.height * self.cell_size + self.top + 66))
+
+            elif self.butweap2active and (self.boardshow[cell_coords[1]][cell_coords[0]] == 'e1' or
+                                       self.boardshow[cell_coords[1]][cell_coords[0]] == 'e12' or
+                                          self.boardshow[cell_coords[1]][cell_coords[0]] == 'e3' or
+                                          self.boardshow[cell_coords[1]][cell_coords[0]] == 'e32'):
                 self.enemies[(cell_coords[0], cell_coords[1])].health -= self.hero.damage
                 print('ouch', self.enemies[(cell_coords[0], cell_coords[1])].health)
                 self.butweap1active = False
@@ -395,6 +464,8 @@ class Gameboard(Board):
                     self.boardshow[i][j] = 'e'
                 elif self.boardshow[i][j] == 'e12':
                     self.boardshow[i][j] = 'e1'
+                elif self.boardshow[i][j] == 'e32':
+                    self.boardshow[i][j] = 'e3'
 
         if mouse_pos[0] in range(self.left, self.width * self.cell_size + self.left) and \
                 mouse_pos[1] in range(self.top, self.height * self.cell_size + self.top):
@@ -407,8 +478,8 @@ class Gameboard(Board):
                 self.boardshow[sp[1]][sp[0]] = 'e2'
             elif self.boardshow[sp[1]][sp[0]] == 'e1':
                 self.boardshow[sp[1]][sp[0]] = 'e12'
-            else:
-                pass
+            elif self.boardshow[sp[1]][sp[0]] == 'e3':
+                self.boardshow[sp[1]][sp[0]] = 'e32'
 
 
 
