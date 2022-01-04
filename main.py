@@ -443,7 +443,8 @@ class Gameboard(Board):
             elif self.butweap2active and (self.boardshow[cell_coords[1]][cell_coords[0]] == 'e1' or
                                        self.boardshow[cell_coords[1]][cell_coords[0]] == 'e12' or
                                           self.boardshow[cell_coords[1]][cell_coords[0]] == 'e3' or
-                                          self.boardshow[cell_coords[1]][cell_coords[0]] == 'e32'):
+                                          self.boardshow[cell_coords[1]][cell_coords[0]] == 'e32') and self.energyused \
+                    >= self.weap2mana:
                 self.enemies[(cell_coords[0], cell_coords[1])].health -= self.hero.damage
                 print('ouch', self.enemies[(cell_coords[0], cell_coords[1])].health)
                 self.butweap1active = False
@@ -452,6 +453,7 @@ class Gameboard(Board):
                     self.boardshow[cell_coords[1]][cell_coords[0]] = '0'
                     self.board[cell_coords[1]][cell_coords[0]] = '.'
                 self.get_cell((self.left + 11, self.height * self.cell_size + self.top + 66))
+                self.energyused -= self.weap2mana
 
     def get_seen(self, mouse_pos):
         for i in range(self.height):
