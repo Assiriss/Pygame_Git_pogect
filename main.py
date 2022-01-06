@@ -12,8 +12,6 @@ import sys
 
 import sqlite3
 
-
-
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
     try:
@@ -561,7 +559,14 @@ start_screen()
 pygame.init()
 size = wigth, height = 800, 500
 screen = pygame.display.set_mode(size)
-board = Gameboard(10, 3, load_level('test.txt'))
+mapsource = 0
+with open('data//gameinfo.txt', encoding='utf-8') as file:
+    sp = file.readlines()
+    mapsource = int(sp[0][0])
+cn = sqlite3.connect('database.db')
+cur = cn.cursor()
+records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fetchall()
+board = Gameboard(10, 3, load_level(records[0][0]))
 running = True
 while running:
     for event in pygame.event.get():
