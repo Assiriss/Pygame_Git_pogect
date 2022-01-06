@@ -10,6 +10,8 @@ import os
 import random
 import sys
 
+import sqlite3
+
 
 
 def load_image(name, color_key=None):
@@ -66,20 +68,6 @@ def start_screen():
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def load_image(name, color_key=None):
