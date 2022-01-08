@@ -10,7 +10,7 @@ import os
 import random
 import sys
 
-
+import sqlite3
 
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
@@ -66,20 +66,6 @@ def start_screen():
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def load_image(name, color_key=None):
@@ -478,6 +464,10 @@ class Gameboard(Board):
                 self.butweap1active = False
             else:
                 self.butweap1active = True
+            for i in range(len(self.boardshow)):
+                for j in range(len(self.boardshow[i])):
+                    print(self.boardshow[i][j], end='')
+                print()
 
         elif mouse_pos[0] in range(
                 self.left + self.butweap2cord,
@@ -491,6 +481,10 @@ class Gameboard(Board):
                 self.butweap2active = False
             else:
                 self.butweap2active = True
+            for i in range(len(self.boardshow)):
+                for j in range(len(self.boardshow[i])):
+                    print(self.boardshow[i][j], end='')
+                print()
 
 
 
@@ -511,22 +505,15 @@ class Gameboard(Board):
                 print(self.hero.pos)
                 for i in range(self.height):
                     for j in range(self.width):
-                        if self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
-                            print(j, i, end='<===== \n')
-                            print()
-                            if abs(self.playery - i) > self.hero.range or abs(self.playerx - j) > self.hero.range:
-                                self.boardshow[i][j] = 'e'
-
-                        if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
-                            if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
-                                self.boardshow[i][j] = 'e1'
+                        if self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12' or \
+                                self.boardshow[i][j] == 'e3' or self.boardshow[i][j] == 'e32':
+                            self.boardshow[i][j] = 'e'
 
                         if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
                             if abs(self.playery - i) <= self.weap2range and abs(self.playerx - j) <= self.weap2range:
                                 self.boardshow[i][j] = 'e3'
                             if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
                                 self.boardshow[i][j] = 'e1'
-
                 for i in range(len(self.boardshow)):
                     for j in range(len(self.boardshow[i])):
                         print(self.boardshow[i][j], end='')
@@ -621,7 +608,14 @@ start_screen()
 pygame.init()
 size = wigth, height = 800, 500
 screen = pygame.display.set_mode(size)
-board = Gameboard(10, 3, load_level('test.txt'))
+mapsource = 0
+with open('data//gameinfo.txt', encoding='utf-8') as file:
+    sp = file.readlines()
+    mapsource = int(sp[0][0])
+cn = sqlite3.connect('database.db')
+cur = cn.cursor()
+records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fetchall()
+board = Gameboard(10, 3, load_level(records[0][0]))
 running = True
 while running:
     for event in pygame.event.get():
