@@ -148,6 +148,7 @@ class Board:
         self.on_click(self.get_cell(mouse_pos))
 
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
@@ -192,6 +193,7 @@ class Gameboard(Board):
         self.board = []
         self.boardshow = [['0'] * width for _ in range(height)]
         self.enemies = dict()
+        self.but_menuactive = False
         for i in range(len(map)):
             g = []
             for zi in range(len(map[i])):
@@ -227,6 +229,7 @@ class Gameboard(Board):
                                             self.boardshow[i1 + i][jk + zi] = 'b'
 
             self.board.append(g)
+
         for i in range(self.height):
             for j in range(self.width):
                 if self.boardshow[i][j] == 'e1' or self.boardshow[i][j] == 'e12':
@@ -261,8 +264,10 @@ class Gameboard(Board):
     def render(self, screen):
         pygame.draw.rect(screen, (247, 232, 170), (self.left, self.top, self.width * self.cell_size,
                                                   self.height * self.cell_size))
+
         for j in range(0, self.height * self.cell_size, self.cell_size):
             for i in range(0, self.width * self.cell_size, self.cell_size):
+
                 if self.butgoactive and (self.boardshow[j // self.cell_size][i // self.cell_size] == 'b' or \
                         self.boardshow[j // self.cell_size][i // self.cell_size] == '@'):
                     pygame.draw.rect(screen, (0, 128, 128),
@@ -300,6 +305,7 @@ class Gameboard(Board):
                         self.board[j // self.cell_size][i // self.cell_size] != '.':
                     pygame.draw.circle(screen, (0, 255, 255), (i + self.left + self.cell_size // 2, j + self.top +
                                                                self.cell_size // 2), 25)
+
                 pygame.draw.rect(screen, (255, 255, 255),
                                  (i + self.left, j + self.top, self.cell_size, self.cell_size), 1)
         pygame.draw.rect(screen, (170, 147, 10), (self.left, self.top, self.width * self.cell_size,
@@ -330,6 +336,7 @@ class Gameboard(Board):
             pygame.draw.rect(screen, (255, 0, 0), (self.left + self.butweap1cord, self.height * self.cell_size +
                                                    self.top +
                                                    25, 200, 50))
+
         else:
             pygame.draw.rect(screen, (255, 255, 0),
                              (self.left + self.butweap1cord, self.height * self.cell_size + self.top +
@@ -343,6 +350,14 @@ class Gameboard(Board):
                              (self.left + self.butweap2cord, self.height * self.cell_size + self.top +
                               25, 200, 50))
 
+        pygame.draw.rect(screen, (190, 190, 190), (500, 20, 60, 60))
+        pygame.draw.rect(screen, (190, 190, 190), (570, 20, 60, 60))
+        font = pygame.font.Font(None, 20)
+
+        string_rendered1 = font.render('big zel', 1, pygame.Color('white'))
+        screen.blit(string_rendered1, (508, 80))
+        string_rendered2 = font.render('small zel', 1, pygame.Color('white'))
+        screen.blit(string_rendered2, (572, 80))
     def get_cell(self, mouse_pos):
         if mouse_pos[0] in range(self.left, self.width * self.cell_size + self.left) and \
                 mouse_pos[1] in range(self.top, self.height * self.cell_size + self.top):
@@ -469,6 +484,7 @@ class Gameboard(Board):
 
     def on_click(self, cell_coords):
         print(cell_coords)
+
         if cell_coords is not None:
             print(self.boardshow[cell_coords[1]][cell_coords[0]])
             if self.butgoactive and self.boardshow[cell_coords[1]][cell_coords[0]] == 'bl':
@@ -568,6 +584,49 @@ def load_level(filename):
 
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
+class Resource:
+    def __init__(self, name, image_path):
+        self.name = name
+        self.amount = 0
+        self. image = load_image(image_path)
+
+class Inventory:
+    def __init__(self):
+        self. resources = {'small': Resource("small", 'small.jpg'),
+                           'big': Resource("big", 'big.jpg')}
+        self.invetory_panel = [None]
+        self.whole_inventory = [None] * 4
+    def got_amount(self, name):
+        try:
+            return self.resources[name].amount
+        except KeyError:
+            return -1
+
+    def increase(self, name):
+        try:
+            self.resources[name].amount += 1
+
+        except KeyError:
+            print("Error increasing")
+    def update_whole (self):
+        for name, resource in self.resources. items():
+            if resource.amount != 0 and resource not in self.whole_inventory:
+                self.whole_inventory. insert(self. whole_inventory. index(None), resource)
+                self.whole_inventory.remove (None)
+    def draw_invent(self):
+        x_iv = 60
+        y_iv = 60
+        size = 60
+        for cell in self.whole_inventory:
+            pygame.draw.rect(screen, (200, 215, 227), (x_iv, y_iv, size, size))
+            x_iv += size
+            if x_iv == 180:
+                x_iv = 60
+                y_iv += size
+
+
+inventory = Inventory()
+
 start_screen()
 pygame.init()
 size = wigth, height = 800, 500
@@ -576,11 +635,22 @@ board = Gameboard(10, 3, load_level('test.txt'))
 running = True
 while running:
     for event in pygame.event.get():
+        keys = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.K_KP_ENTER:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
         board.get_seen(pygame.mouse.get_pos())
+        if keys[pygame.K_1]:
+            if board.but_menuactive == True:
+                inventory.draw_invent()
+                board.but_menuactive = False
+                print('')
+                print('1')
+            else:
+                board.but_menuactive = True
+
     screen.fill((160, 160, 160))
     board.render(screen)
     pygame.display.flip()
+

@@ -1,12 +1,53 @@
 import os
-
+import sys
 import pygame
 
 pygame.init()
-size = width, height = 500, 500
+size = width, height = 800, 500
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
+FPS = 50
+
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def start_screen():
+    intro_text = ['Создатели проэкта:',
+                  "Толмачев Никита",
+                  "Зайцев Максим",
+                  "Дружиннин дмитрий"]
+
+    fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 50)
+    font2 = pygame.font.Font(None, 20)
+    font3 = pygame.font.Font(None, 30)
+    text_coord_y = 400
+    text_coord_x = 660
+
+    text = font.render("ARCADIUM", True, (100, 255, 100))
+    screen.blit(text, (310, 50))
+    text2 = font3.render("PRESS ENTER TO START", True, (100, 100, 100))
+    screen.blit(text2, (285, 230))
+    for line in intro_text:
+        string_rendered = font2.render(line, 1, pygame.Color('white'))
+        text_coord_y += 20
+        screen.blit(string_rendered, (text_coord_x, text_coord_y))
+
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(FPS)
 
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
@@ -341,7 +382,8 @@ class Gameboard(Board):
                 self.boardshow[sp[1]][sp[0]] = 'e12'
             else:
                 pass
-
+def draw_panel():
+    pygame.draw.rect(screen, (0, 0, 0), (100, 200, 100, 100))
 
 
 def load_level(filename):
@@ -353,7 +395,7 @@ def load_level(filename):
 
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
-
+start_screen()
 pygame.init()
 size = wigth, height = 800, 500
 screen = pygame.display.set_mode(size)
@@ -365,6 +407,7 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
+
         board.get_seen(pygame.mouse.get_pos())
     screen.fill((0, 0, 0))
     board.render(screen)
