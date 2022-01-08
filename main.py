@@ -365,6 +365,12 @@ class Gameboard(Board):
         zel2 = pygame.transform.scale(load_image('big.jpg'), (60, 60))
         zel2.set_colorkey((0, 0, 0))
         screen.blit(zel2, (570, 20))
+        if False:
+            Inventory.small()
+            Inventory.big()
+
+
+
     def get_cell(self, mouse_pos):
         if mouse_pos[0] in range(self.left, self.width * self.cell_size + self.left) and \
                 mouse_pos[1] in range(self.top, self.height * self.cell_size + self.top):
@@ -488,7 +494,6 @@ class Gameboard(Board):
 
 
 
-
     def on_click(self, cell_coords):
         print(cell_coords)
 
@@ -580,6 +585,23 @@ class Gameboard(Board):
             elif self.boardshow[sp[1]][sp[0]] == 'e3':
                 self.boardshow[sp[1]][sp[0]] = 'e32'
 
+class Inventory():
+    def __init__(self):
+        self.small = 1
+        self.big = 1
+    def small(self):
+        font = pygame.font.Font(None, 20)
+        string_rendered_small = font.render(f'{self.small}', 1, pygame.Color('white'))
+        screen.blit(string_rendered_small, (500, 78))
+        self.small -=1
+        self.Enemy.health += 25
+    def big(self):
+        font = pygame.font.Font(None, 20)
+        string_rendered_big = font.render(str(Inventory.big), 1, pygame.Color('white'))
+        screen.blit(string_rendered_big, (578, 78))
+        self.big -= 1
+        Enemy.health += 50
+
 
 
 def load_level(filename):
@@ -591,12 +613,6 @@ def load_level(filename):
 
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
-class Resource:
-    def __init__(self, name, image_path):
-        self.name = name
-        self.amount = 0
-        self. image = load_image(image_path)
-        self.invent = [None] * 2
 
 
 
@@ -615,14 +631,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
         board.get_seen(pygame.mouse.get_pos())
-        if keys[pygame.K_1]:
-            if board.but_menuactive == True:
-                inventory.draw_invent()
-                board.but_menuactive = False
-                print('')
-                print('1')
-            else:
-                board.but_menuactive = True
+
 
     screen.fill((160, 160, 160))
     board.render(screen)
