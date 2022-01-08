@@ -354,10 +354,17 @@ class Gameboard(Board):
         pygame.draw.rect(screen, (190, 190, 190), (570, 20, 60, 60))
         font = pygame.font.Font(None, 20)
 
-        string_rendered1 = font.render('big zel', 1, pygame.Color('white'))
-        screen.blit(string_rendered1, (508, 80))
-        string_rendered2 = font.render('small zel', 1, pygame.Color('white'))
-        screen.blit(string_rendered2, (572, 80))
+        string_rendered2 = font.render('big zel', 1, pygame.Color('white'))
+        string_rendered1 = font.render('small zel', 1, pygame.Color('white'))
+        screen.blit(string_rendered1, (500, 80))
+        screen.blit(string_rendered2, (578, 80))
+
+        zel1 = pygame.transform.scale(load_image('small.jpg'), (60, 60))
+        zel1.set_colorkey((0, 0, 0))
+        screen.blit(zel1, (500, 20))
+        zel2 = pygame.transform.scale(load_image('big.jpg'), (60, 60))
+        zel2.set_colorkey((0, 0, 0))
+        screen.blit(zel2, (570, 20))
     def get_cell(self, mouse_pos):
         if mouse_pos[0] in range(self.left, self.width * self.cell_size + self.left) and \
                 mouse_pos[1] in range(self.top, self.height * self.cell_size + self.top):
@@ -589,43 +596,10 @@ class Resource:
         self.name = name
         self.amount = 0
         self. image = load_image(image_path)
-
-class Inventory:
-    def __init__(self):
-        self. resources = {'small': Resource("small", 'small.jpg'),
-                           'big': Resource("big", 'big.jpg')}
-        self.invetory_panel = [None]
-        self.whole_inventory = [None] * 4
-    def got_amount(self, name):
-        try:
-            return self.resources[name].amount
-        except KeyError:
-            return -1
-
-    def increase(self, name):
-        try:
-            self.resources[name].amount += 1
-
-        except KeyError:
-            print("Error increasing")
-    def update_whole (self):
-        for name, resource in self.resources. items():
-            if resource.amount != 0 and resource not in self.whole_inventory:
-                self.whole_inventory. insert(self. whole_inventory. index(None), resource)
-                self.whole_inventory.remove (None)
-    def draw_invent(self):
-        x_iv = 60
-        y_iv = 60
-        size = 60
-        for cell in self.whole_inventory:
-            pygame.draw.rect(screen, (200, 215, 227), (x_iv, y_iv, size, size))
-            x_iv += size
-            if x_iv == 180:
-                x_iv = 60
-                y_iv += size
+        self.invent = [None] * 2
 
 
-inventory = Inventory()
+
 
 start_screen()
 pygame.init()
