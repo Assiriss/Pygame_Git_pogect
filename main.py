@@ -580,14 +580,16 @@ class Inventory():
         font = pygame.font.Font(None, 20)
         string_rendered_small = font.render(f'{self.small}', 1, pygame.Color('white'))
         screen.blit(string_rendered_small, (500, 78))
-        self.small -=1
-        self.Enemy.health += 25
+        if self.small > 0:
+            self.small -=1
+            self.Enemy.health += 25
     def big(self):
         font = pygame.font.Font(None, 20)
         string_rendered_big = font.render(str(Inventory.big), 1, pygame.Color('white'))
         screen.blit(string_rendered_big, (578, 78))
-        self.big -= 1
-        Enemy.health += 50
+        if self.small > 0:
+            self.big -= 1
+            Enemy.health += 50
 
 
 
