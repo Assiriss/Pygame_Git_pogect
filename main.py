@@ -179,7 +179,7 @@ class Gameboard(Board):
         self.board = []
         self.boardshow = [['0'] * width for _ in range(height)]
         self.enemies = dict()
-        self.but_menuactive = False
+
         for i in range(len(map)):
             g = []
             for zi in range(len(map[i])):
@@ -226,7 +226,6 @@ class Gameboard(Board):
                         self.boardshow[i][j] = 'e3'
                     if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
                         self.boardshow[i][j] = 'e1'
-
         self.butgosize = 40
         self.butgoactive = False
         self.butgoused = False
@@ -246,6 +245,7 @@ class Gameboard(Board):
         self.energybar = 100
         self.energyused = 100
         self.interheight = 80
+
 
     def render(self, screen):
         pygame.draw.rect(screen, (247, 232, 170), (self.left, self.top, self.width * self.cell_size,
@@ -291,6 +291,16 @@ class Gameboard(Board):
                         self.board[j // self.cell_size][i // self.cell_size] != '.':
                     pygame.draw.circle(screen, (0, 255, 255), (i + self.left + self.cell_size // 2, j + self.top +
                                                                self.cell_size // 2), 25)
+                if is_inventory == True:
+                    pygame.draw.rect(screen, (220, 225, 227), (28, 10, 350, 100))
+                    font1 = pygame.font.Font(None, 30)
+                    font2 = pygame.font.Font(None, 20)
+                    kol_vo_money = font1.render(f'{Inventory().money}$', 1, pygame.Color('black'))
+                    text_small = font2.render('small_zel = 2$', 1, pygame.Color('black'))
+                    text_big = font2.render('small_big = 5$', 1, pygame.Color('black'))
+                    screen.blit(kol_vo_money, (30, 15))
+                    screen.blit(text_small, (150, 15))
+                    screen.blit(text_big, (150, 35))
 
                 pygame.draw.rect(screen, (255, 255, 255),
                                  (i + self.left, j + self.top, self.cell_size, self.cell_size), 1)
@@ -355,6 +365,7 @@ class Gameboard(Board):
         screen.blit(kol_vo_zel1, (597, 68))
         kol_vo_zel2 = font.render(str(Inventory().big_he), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel2, (527, 68))
+
 
 
 
@@ -581,6 +592,7 @@ class Gameboard(Board):
 
 class Inventory():
     def __init__(self):
+        self.money = 600
         self.small_he = 5
         self.big_he = 5
     def small(self):
@@ -590,7 +602,7 @@ class Inventory():
         if self.small_he > 0:
             self.small -=1
             Enemy().health += 25
-            screen.blit(str(self.small_he), (500, 78))
+
     def big(self):
         font = pygame.font.Font(None, 20)
         string_rendered_big = font.render(str(Inventory.big), 1, pygame.Color('white'))
@@ -598,6 +610,8 @@ class Inventory():
         if self.small > 0:
             self.big -= 1
             Enemy().health += 50
+
+
 
 
 
@@ -626,6 +640,7 @@ cn = sqlite3.connect('database (1).db')
 cur = cn.cursor()
 records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fetchall()
 board = Gameboard(10, 3, load_level(records[0][0]))
+is_inventory = False
 running = True
 while running:
     for event in pygame.event.get():
@@ -634,6 +649,11 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
+        if keys[pygame.K_UP]:
+            if is_inventory == False:
+                is_inventory = True
+            else:
+                is_inventory = False
         board.get_seen(pygame.mouse.get_pos())
 
 
