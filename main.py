@@ -351,9 +351,10 @@ class Gameboard(Board):
         zel2 = pygame.transform.scale(load_image('big.jpg'), (60, 60))
         zel2.set_colorkey((0, 0, 0))
         screen.blit(zel2, (570, 20))
-        if False:
-            Inventory.small()
-            Inventory.big()
+        kol_vo_zel1 = font.render(str(Inventory().small_he), 1, pygame.Color('white'))
+        screen.blit(kol_vo_zel1, (597, 68))
+        kol_vo_zel2 = font.render(str(Inventory().big_he), 1, pygame.Color('white'))
+        screen.blit(kol_vo_zel2, (527, 68))
 
 
 
@@ -486,6 +487,12 @@ class Gameboard(Board):
                     print(self.boardshow[i][j], end='')
                 print()
 
+        elif mouse_pos[0] in range(500, 20) and mouse_pos[1] in range(60, 60):
+            Inventory().small()
+
+        elif mouse_pos[0] in range(570, 20) and mouse_pos[1] in range(60, 60):
+            Inventory().big()
+
 
 
     def on_click(self, cell_coords):
@@ -574,22 +581,23 @@ class Gameboard(Board):
 
 class Inventory():
     def __init__(self):
-        self.small = 1
-        self.big = 1
+        self.small_he = 5
+        self.big_he = 5
     def small(self):
         font = pygame.font.Font(None, 20)
         string_rendered_small = font.render(f'{self.small}', 1, pygame.Color('white'))
         screen.blit(string_rendered_small, (500, 78))
-        if self.small > 0:
+        if self.small_he > 0:
             self.small -=1
-            self.Enemy.health += 25
+            Enemy().health += 25
+            screen.blit(str(self.small_he), (500, 78))
     def big(self):
         font = pygame.font.Font(None, 20)
         string_rendered_big = font.render(str(Inventory.big), 1, pygame.Color('white'))
         screen.blit(string_rendered_big, (578, 78))
         if self.small > 0:
             self.big -= 1
-            Enemy.health += 50
+            Enemy().health += 50
 
 
 
@@ -614,7 +622,7 @@ mapsource = 0
 with open('data//gameinfo.txt', encoding='utf-8') as file:
     sp = file.readlines()
     mapsource = int(sp[0][0])
-cn = sqlite3.connect('database.db')
+cn = sqlite3.connect('database (1).db')
 cur = cn.cursor()
 records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fetchall()
 board = Gameboard(10, 3, load_level(records[0][0]))
