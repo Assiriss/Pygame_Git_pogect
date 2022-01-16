@@ -636,7 +636,7 @@ mapsource = 0
 with open('data//gameinfo.txt', encoding='utf-8') as file:
     sp = file.readlines()
     mapsource = int(sp[0][0])
-cn = sqlite3.connect('database (1).db')
+cn = sqlite3.connect('database.db')
 cur = cn.cursor()
 records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fetchall()
 board = Gameboard(10, 3, load_level(records[0][0]))
