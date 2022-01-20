@@ -407,6 +407,7 @@ class Gameboard(Board):
                     kol = evildude.range
                     prx = pos_x
                     pry = pos_y
+                    sp22 = []
                     while (pos_x, pos_y) != (self.playerx, self.playery) and kol > 0:
 
                         prx = pos_x
@@ -416,27 +417,29 @@ class Gameboard(Board):
                         if pos_y != self.playery:
                             pos_y += (self.playery - pos_y) // abs(self.playery - pos_y)
                         kol -= 1
-                        print(pos_x, pos_y)
-                    print(self.hero.pos)
-                    if (pos_x, pos_y) == (self.playerx, self.playery):
-                        print(evildude.pos[0], evildude.pos[1])
-                        self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
-                        self.board[evildude.pos[1]][evildude.pos[0]] = '.'
-                        evildude.pos = (prx, pry)
-                        self.enemies[(prx, pry)] = evildude
-                        print(prx, pry)
-                        self.board[pry][prx] = 'e'
-                        self.boardshow[pry][prx] = 'e'
+                        sp22.append((pos_x, pos_y))
+                    print(sp22)
+                    ishenear = True
+                    for i in range(len(sp22) - 1, -1, -1):
+                        pos_x = sp22[i][0]
+                        pos_y = sp22[i][1]
+                        if self.board[pos_y][pos_x] == '@' or self.board[pos_y][pos_x] == 'e':
+                            print(evildude.pos[0], evildude.pos[1])
+                        else:
+                            print(evildude.pos[0], evildude.pos[1])
+                            self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
+                            self.board[evildude.pos[1]][evildude.pos[0]] = '.'
+                            evildude.pos = (pos_x, pos_y)
+                            print(pos_x, pos_y)
+                            self.enemies[(pos_x, pos_y)] = evildude
+                            self.board[pos_y][pos_x] = 'e'
+                            self.boardshow[pos_y][pos_x] = 'e'
+                            ishenear = False
+                            break
+                    if ishenear:
                         self.hero.health -= evildude.damage
-                    else:
-                        print(evildude.pos[0], evildude.pos[1])
-                        self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
-                        self.board[evildude.pos[1]][evildude.pos[0]] = '.'
-                        evildude.pos = (pos_x, pos_y)
-                        print(pos_x, pos_y)
-                        self.enemies[(pos_x, pos_y)] = evildude
-                        self.board[pos_y][pos_x] = 'e'
-                        self.boardshow[pos_y][pos_x] = 'e'
+                        self.enemies[(evildude.pos[0], evildude.pos[1])] = evildude
+                print(self.enemies)
                 for i in range(len(self.boardshow)):
                     for j in range(len(self.boardshow[i])):
                         if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
