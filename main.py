@@ -167,6 +167,7 @@ class Enemy(pygame.sprite.Sprite):
 class Gameboard(Board):
     def __init__(self, width, height, map):
         super().__init__(width, height)
+        self.kolenemies = 0
         self.hero = Player(0, 0)
         self.playerx = 0
         self.playery = 0
@@ -185,6 +186,7 @@ class Gameboard(Board):
             for zi in range(len(map[i])):
                 if map[i][zi] != '@' and map[i][zi] != '.':
                     newenem = Enemy(zi, i, load_image('mar.png'))
+                    self.kolenemies += 1
                     if map[i][zi] == 'd':
                         newenem.obozn = 'd'
                         newenem.allhealth = 100
@@ -543,6 +545,7 @@ class Gameboard(Board):
                 self.butweap1active = False
                 if self.enemies[(cell_coords[0], cell_coords[1])].health <= 0:
                     del self.enemies[(cell_coords[0], cell_coords[1])]
+                    self.kolenemies -= 1
                     self.boardshow[cell_coords[1]][cell_coords[0]] = '0'
                     self.board[cell_coords[1]][cell_coords[0]] = '.'
                 self.get_cell((self.left + 11, self.height * self.cell_size + self.top + 66))
@@ -556,6 +559,7 @@ class Gameboard(Board):
                 print('ouch', self.enemies[(cell_coords[0], cell_coords[1])].health)
                 self.butweap1active = False
                 if self.enemies[(cell_coords[0], cell_coords[1])].health <= 0:
+                    self.kolenemies -= 1
                     del self.enemies[(cell_coords[0], cell_coords[1])]
                     self.boardshow[cell_coords[1]][cell_coords[0]] = '0'
                     self.board[cell_coords[1]][cell_coords[0]] = '.'
@@ -638,8 +642,11 @@ with open('data//gameinfo.txt', encoding='utf-8') as file:
     mapsource = int(sp[0][0])
 cn = sqlite3.connect('database.db')
 cur = cn.cursor()
-records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fetchall()
-board = Gameboard(10, 3, load_level(records[0][0]))
+records = cur.execute(f'''SELECT * FROM levels''').fetchall()
+levels = dict()
+for elem in records:
+    levels[elem[0]] = elem
+board = Gameboard(10, 3, load_level(levels[mapsource][1]))
 is_inventory = False
 running = True
 while running:
@@ -655,6 +662,13 @@ while running:
             else:
                 is_inventory = False
         board.get_seen(pygame.mouse.get_pos())
+    if board.kolenemies <= 0:
+        print(True)
+        if mapsource == len(levels):
+            running = False
+        else:
+            mapsource += 1
+            board = Gameboard(10, 3, load_level((levels[mapsource][1])))
 
 
     screen.fill((160, 160, 160))
