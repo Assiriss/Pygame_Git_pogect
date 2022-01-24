@@ -1,16 +1,14 @@
 import os
-
 import pygame
-import pygame_menu
+import os
+import sys
+import sqlite3
+import time
+
 pygame.init()
 size = width, height = 800, 500
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
-import os
-import random
-import sys
-
-import sqlite3
 
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
@@ -34,10 +32,12 @@ def terminate():
 
 
 def start_screen():
+
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('заставка звук.mp3'))
+
     intro_text = ['Создатели проэкта:',
                   "Толмачев Никита",
-                  "Зайцев Максим",
-                  "Дружиннин дмитрий"]
+                  "Зайцев Максим"]
 
     fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
     screen.blit(fon, (0, 0))
@@ -56,7 +56,6 @@ def start_screen():
         text_coord_y += 20
         screen.blit(string_rendered, (text_coord_x, text_coord_y))
 
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -66,6 +65,7 @@ def start_screen():
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
+
 pygame.init()
 
 
@@ -327,8 +327,8 @@ class Gameboard(Board):
                     font1 = pygame.font.Font(None, 30)
                     font2 = pygame.font.Font(None, 20)
                     kol_vo_money = font1.render(f'{self.money}$', 1, pygame.Color('black'))
-                    text_small = font2.render('small_zel = 2$', 1, pygame.Color('black'))
-                    text_big = font2.render('big_zel = 5$', 1, pygame.Color('black'))
+                    text_small = font2.render('Artensia = 2$', 1, pygame.Color('black'))
+                    text_big = font2.render('Doxicide = 5$', 1, pygame.Color('black'))
                     screen.blit(kol_vo_money, (30, 15))
                     screen.blit(text_small, (150, 15))
                     screen.blit(text_big, (150, 55))
@@ -381,10 +381,10 @@ class Gameboard(Board):
         pygame.draw.rect(screen, (190, 190, 190), (570, 20, 60, 60))
         font = pygame.font.Font(None, 20)
 
-        string_rendered2 = font.render('big zel', 1, pygame.Color('white'))
-        string_rendered1 = font.render('small zel', 1, pygame.Color('white'))
-        screen.blit(string_rendered1, (500, 80))
-        screen.blit(string_rendered2, (578, 80))
+        string_rendered2 = font.render('Doxicide', 1, pygame.Color('white'))
+        string_rendered1 = font.render('Artensia', 1, pygame.Color('white'))
+        screen.blit(string_rendered1, (502, 80))
+        screen.blit(string_rendered2, (572, 80))
 
         zel1 = pygame.transform.scale(load_image('small.jpg'), (60, 60))
         zel1.set_colorkey((0, 0, 0))
@@ -504,6 +504,7 @@ class Gameboard(Board):
                                     self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e1'
                                 if self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] == 'e2':
                                     self.boardshow[i1 + cell_coords[1]][j + cell_coords[0]] = 'e12'
+
         elif mouse_pos[0] in range(self.left + self.butweap1cord, self.left + self.butweap1cord + 200) and mouse_pos[1]\
                 in range(self.height * self.cell_size + self.top + 25, self.height * self.cell_size + self.top + 75):
             self.butgoactive = False
@@ -539,34 +540,54 @@ class Gameboard(Board):
             string_rendered_small = font.render(f'{self.smalll}', 1, pygame.Color('white'))
             screen.blit(string_rendered_small, (500, 78))
             if self.smalll > 0:
+                if sound == True:
+                    pygame.mixer.music.load('зелье.mp3')
+                    pygame.mixer.music.play(0)
                 self.smalll -= 1
                 if self.hero.health < 100:
                     if self.hero.health < 75:
                         self.hero.health += 25
                     else:
                         self.hero.health = 100
+            else:
+                pygame.mixer.music.load('зелье.mp3')
+                pygame.mixer.music.play(0)
 
         elif mouse_pos[0] in range(570, 631) and mouse_pos[1] in range(20, 81):
+
             font = pygame.font.Font(None, 20)
             string_rendered_big = font.render(str(), 1, pygame.Color('white'))
             screen.blit(string_rendered_big, (578, 78))
             if self.bigg > 0:
+                if sound == True:
+                    pygame.mixer.music.load('большое зелье.mp3')
+                    pygame.mixer.music.play(0)
                 self.bigg -= 1
                 if self.hero.health < 100:
                     if self.hero.health < 50:
                         self.hero.health += 50
                     else:
                         self.hero.health = 100
+            else:
+                pygame.mixer.music.load('зелье.mp3')
+                pygame.mixer.music.play(0)
 
         elif is_inventory == True and mouse_pos[0] in range(175, 192) and mouse_pos[1] in range(35, 50):
+            if sound == True:
+                pygame.mixer.music.load('покупка.mp3')
+                pygame.mixer.music.play(0)
             if self.money > 3:
                 self.money -= 3
                 self.smalll += 1
 
         elif is_inventory == True and mouse_pos[0] in range(175, 192) and mouse_pos[1] in range(82, 96):
+            if sound == True:
+                pygame.mixer.music.load('покупка.mp3')
+                pygame.mixer.music.play(0)
             if self.money > 5:
                 self.money -= 5
                 self.bigg += 1
+
 
 
     def on_click(self, cell_coords):
@@ -670,8 +691,8 @@ def load_level(filename):
 
 
 
-
 start_screen()
+pygame.mixer.Channel(1).stop()
 pygame.init()
 size = wigth, height = 800, 500
 screen = pygame.display.set_mode(size)
@@ -685,8 +706,19 @@ records = cur.execute(f'''SELECT level FROM levels WHERE id=={mapsource}''').fet
 board = Gameboard(10, 3, load_level(records[0][0]))
 is_inventory = False
 running = True
+sound = True
+sek = time.time()
+a = 0
+
+
 while running:
     for event in pygame.event.get():
+        if sound == True and a == 0:
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound('главная музыка.mp3'))
+            a = 1
+        elif sound == False:
+            pygame.mixer.Channel(0).stop()
+            a = 0
         keys = pygame.key.get_pressed()
         button = Button(50, 50)
         button.draw(50, 50, 'wow')
@@ -699,6 +731,11 @@ while running:
                 is_inventory = True
             else:
                 is_inventory = False
+        if keys[pygame.K_DOWN]:
+            if sound == True:
+                sound = False
+            else:
+                sound = True
         board.get_seen(pygame.mouse.get_pos())
 
 
