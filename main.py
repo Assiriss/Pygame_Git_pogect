@@ -759,6 +759,7 @@ while running:
                 sound_gl = True
         board.get_seen(pygame.mouse.get_pos())
         if board.kolenemies <= 0:
+
             print(True)
             if mapsource == len(levels):
                 running = False
