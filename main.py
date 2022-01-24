@@ -1,7 +1,7 @@
 import os
 
 import pygame
-
+import pygame_menu
 pygame.init()
 size = width, height = 800, 500
 screen = pygame.display.set_mode(size)
@@ -66,6 +66,8 @@ def start_screen():
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
+pygame.init()
+
 
 
 def load_image(name, color_key=None):
@@ -96,6 +98,31 @@ player_group = pygame.sprite.Group()
 player_image = load_image('mar.png')
 
 tile_width = tile_height = 50
+
+
+class Button:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def draw(self, x, y, message, action=None):
+        mouse = pygame.mouse.get_pos()
+        if x < mouse[0] < x + self.width:
+            if y < mouse[1] < y + self.height:
+                pygame.draw.rect(screen, (23, 204, 58), (x, y, self.width, self.height))
+
+
+        pygame.draw.rect(screen, (13, 162, 50), (x, y, self.width, self.height))
+        font = pygame.font.Font(None, 50)
+        text = font.render("message", True, (100, 255, 100))
+        screen.blit(text, (50, 50))
+
+
+
+
+
+
+
 
 class Board:
     # создание поля
@@ -245,6 +272,10 @@ class Gameboard(Board):
         self.energybar = 100
         self.energyused = 100
         self.interheight = 80
+        self.smalll = 5
+        self.bigg = 5
+        self.money = 600
+
 
 
     def render(self, screen):
@@ -295,12 +326,12 @@ class Gameboard(Board):
                     pygame.draw.rect(screen, (220, 225, 227), (28, 10, 350, 100))
                     font1 = pygame.font.Font(None, 30)
                     font2 = pygame.font.Font(None, 20)
-                    kol_vo_money = font1.render(f'{Inventory().money}$', 1, pygame.Color('black'))
+                    kol_vo_money = font1.render(f'{self.money}$', 1, pygame.Color('black'))
                     text_small = font2.render('small_zel = 2$', 1, pygame.Color('black'))
-                    text_big = font2.render('small_big = 5$', 1, pygame.Color('black'))
+                    text_big = font2.render('big_zel = 5$', 1, pygame.Color('black'))
                     screen.blit(kol_vo_money, (30, 15))
                     screen.blit(text_small, (150, 15))
-                    screen.blit(text_big, (150, 35))
+                    screen.blit(text_big, (150, 55))
 
                 pygame.draw.rect(screen, (255, 255, 255),
                                  (i + self.left, j + self.top, self.cell_size, self.cell_size), 1)
@@ -361,15 +392,20 @@ class Gameboard(Board):
         zel2 = pygame.transform.scale(load_image('big.jpg'), (60, 60))
         zel2.set_colorkey((0, 0, 0))
         screen.blit(zel2, (570, 20))
-        kol_vo_zel1 = font.render(str(Inventory().small_he), 1, pygame.Color('white'))
+        kol_vo_zel1 = font.render(str(self.bigg), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel1, (597, 68))
-        kol_vo_zel2 = font.render(str(Inventory().big_he), 1, pygame.Color('white'))
+        kol_vo_zel2 = font.render(str((self.smalll)), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel2, (527, 68))
-
+        if is_inventory == True:
+            plus = pygame.transform.scale(load_image('+.png'), (20, 20))
+            plus.set_colorkey((255, 255, 255))
+            screen.blit(plus, (175, 32))
+            screen.blit(plus, (175, 78))
 
 
 
     def get_cell(self, mouse_pos):
+        print(mouse_pos[0], mouse_pos[1])
         if mouse_pos[0] in range(self.left, self.width * self.cell_size + self.left) and \
                 mouse_pos[1] in range(self.top, self.height * self.cell_size + self.top):
             return (mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.top) // self.cell_size
@@ -498,12 +534,39 @@ class Gameboard(Board):
                     print(self.boardshow[i][j], end='')
                 print()
 
-        elif mouse_pos[0] in range(500, 20) and mouse_pos[1] in range(60, 60):
-            Inventory().small()
+        elif mouse_pos[0] in range(500, 561) and mouse_pos[1] in range(20, 81):
+            font = pygame.font.Font(None, 20)
+            string_rendered_small = font.render(f'{self.smalll}', 1, pygame.Color('white'))
+            screen.blit(string_rendered_small, (500, 78))
+            if self.smalll > 0:
+                self.smalll -= 1
+                if self.hero.health < 100:
+                    if self.hero.health < 75:
+                        self.hero.health += 25
+                    else:
+                        self.hero.health = 100
 
-        elif mouse_pos[0] in range(570, 20) and mouse_pos[1] in range(60, 60):
-            Inventory().big()
+        elif mouse_pos[0] in range(570, 631) and mouse_pos[1] in range(20, 81):
+            font = pygame.font.Font(None, 20)
+            string_rendered_big = font.render(str(), 1, pygame.Color('white'))
+            screen.blit(string_rendered_big, (578, 78))
+            if self.bigg > 0:
+                self.bigg -= 1
+                if self.hero.health < 100:
+                    if self.hero.health < 50:
+                        self.hero.health += 50
+                    else:
+                        self.hero.health = 100
 
+        elif is_inventory == True and mouse_pos[0] in range(175, 192) and mouse_pos[1] in range(35, 50):
+            if self.money > 3:
+                self.money -= 3
+                self.smalll += 1
+
+        elif is_inventory == True and mouse_pos[0] in range(175, 192) and mouse_pos[1] in range(82, 96):
+            if self.money > 5:
+                self.money -= 5
+                self.bigg += 1
 
 
     def on_click(self, cell_coords):
@@ -590,26 +653,6 @@ class Gameboard(Board):
             elif self.boardshow[sp[1]][sp[0]] == 'e3':
                 self.boardshow[sp[1]][sp[0]] = 'e32'
 
-class Inventory():
-    def __init__(self):
-        self.money = 600
-        self.small_he = 5
-        self.big_he = 5
-    def small(self):
-        font = pygame.font.Font(None, 20)
-        string_rendered_small = font.render(f'{self.small}', 1, pygame.Color('white'))
-        screen.blit(string_rendered_small, (500, 78))
-        if self.small_he > 0:
-            self.small -=1
-            Enemy().health += 25
-
-    def big(self):
-        font = pygame.font.Font(None, 20)
-        string_rendered_big = font.render(str(Inventory.big), 1, pygame.Color('white'))
-        screen.blit(string_rendered_big, (578, 78))
-        if self.small > 0:
-            self.big -= 1
-            Enemy().health += 50
 
 
 
@@ -645,6 +688,8 @@ running = True
 while running:
     for event in pygame.event.get():
         keys = pygame.key.get_pressed()
+        button = Button(50, 50)
+        button.draw(50, 50, 'wow')
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
