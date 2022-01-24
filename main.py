@@ -1,4 +1,3 @@
-import os
 import pygame
 import os
 import sys
@@ -322,16 +321,7 @@ class Gameboard(Board):
                         self.board[j // self.cell_size][i // self.cell_size] != '.':
                     pygame.draw.circle(screen, (0, 255, 255), (i + self.left + self.cell_size // 2, j + self.top +
                                                                self.cell_size // 2), 25)
-                if is_inventory == True:
-                    pygame.draw.rect(screen, (220, 225, 227), (28, 10, 350, 100))
-                    font1 = pygame.font.Font(None, 30)
-                    font2 = pygame.font.Font(None, 20)
-                    kol_vo_money = font1.render(f'{self.money}$', 1, pygame.Color('black'))
-                    text_small = font2.render('Artensia = 2$', 1, pygame.Color('black'))
-                    text_big = font2.render('Doxicide = 5$', 1, pygame.Color('black'))
-                    screen.blit(kol_vo_money, (30, 15))
-                    screen.blit(text_small, (150, 15))
-                    screen.blit(text_big, (150, 55))
+
 
                 pygame.draw.rect(screen, (255, 255, 255),
                                  (i + self.left, j + self.top, self.cell_size, self.cell_size), 1)
@@ -397,6 +387,22 @@ class Gameboard(Board):
         kol_vo_zel2 = font.render(str((self.smalll)), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel2, (527, 68))
         if is_inventory == True:
+            pygame.draw.rect(screen, (220, 225, 227), (28, 10, 350, 100))
+            font1 = pygame.font.Font(None, 30)
+            font2 = pygame.font.Font(None, 20)
+            kol_vo_money = font1.render(f'{self.money}$', 1, pygame.Color('black'))
+            text_small = font2.render('Artensia', 1, pygame.Color('black'))
+            text_big = font2.render('Doxicide', 1, pygame.Color('black'))
+            screen.blit(kol_vo_money, (30, 15))
+            screen.blit(text_small, (98, 52))
+            screen.blit(text_big, (203, 52))
+        if is_inventory == True:
+            zel_invent1 = pygame.transform.scale(load_image('small.jpg'), (35, 35))
+            zel_invent2 = pygame.transform.scale(load_image('big.jpg'), (35, 35))
+            zel_invent1.set_colorkey((0, 0, 0))
+            zel_invent2.set_colorkey((0, 0, 0))
+            screen.blit(zel_invent1, (107, 14))
+            screen.blit(zel_invent2, (213, 14))
             plus = pygame.transform.scale(load_image('+.png'), (20, 20))
             plus.set_colorkey((255, 255, 255))
             screen.blit(plus, (175, 32))
@@ -709,14 +715,14 @@ running = True
 sound = True
 sek = time.time()
 a = 0
-
+sound_gl = True
 
 while running:
     for event in pygame.event.get():
-        if sound == True and a == 0:
+        if sound_gl == True and a == 0:
             pygame.mixer.Channel(0).play(pygame.mixer.Sound('главная музыка.mp3'))
             a = 1
-        elif sound == False:
+        elif sound_gl == False:
             pygame.mixer.Channel(0).stop()
             a = 0
         keys = pygame.key.get_pressed()
@@ -736,6 +742,11 @@ while running:
                 sound = False
             else:
                 sound = True
+        if keys[pygame.K_HOME]:
+            if sound_gl == True:
+                sound_gl = False
+            else:
+                sound_gl = True
         board.get_seen(pygame.mouse.get_pos())
 
 
