@@ -193,8 +193,8 @@ class Enemy(pygame.sprite.Sprite):
 class Gameboard(Board):
     def __init__(self, width, height, map):
         super().__init__(width, height)
-        self.kolenemies = 0
         self.hero = Player(0, 0)
+        self.kolenemies = 0
         self.playerx = 0
         self.playery = 0
         self.weap2range = 2
@@ -211,8 +211,8 @@ class Gameboard(Board):
             g = []
             for zi in range(len(map[i])):
                 if map[i][zi] != '@' and map[i][zi] != '.':
-                    newenem = Enemy(zi, i, load_image('mar.png'))
                     self.kolenemies += 1
+                    newenem = Enemy(zi, i, load_image('mar.png'))
                     if map[i][zi] == 'd':
                         newenem.obozn = 'd'
                         newenem.allhealth = 100
@@ -460,31 +460,31 @@ class Gameboard(Board):
                             pos_y += (self.playery - pos_y) // abs(self.playery - pos_y)
                         kol -= 1
                         sp22.append((pos_x, pos_y))
-                    print(sp22)
-                    ishenear = True
-                    for i in range(len(sp22) - 1, -1, -1):
-                        pos_x = sp22[i][0]
-                        pos_y = sp22[i][1]
-                        if self.board[pos_y][pos_x] == '@' or self.board[pos_y][pos_x] == 'e':
-                            print(evildude.pos[0], evildude.pos[1])
-                        else:
-                            print(evildude.pos[0], evildude.pos[1])
-                            self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
-                            self.board[evildude.pos[1]][evildude.pos[0]] = '.'
-                            evildude.pos = (pos_x, pos_y)
-                            print(pos_x, pos_y)
-                            self.enemies[(pos_x, pos_y)] = evildude
-                            self.board[pos_y][pos_x] = 'e'
-                            self.boardshow[pos_y][pos_x] = 'e'
-                            ishenear = False
-                            break
-                    if ishenear:
-                        self.hero.health -= evildude.damage
-                        self.enemies[(evildude.pos[0], evildude.pos[1])] = evildude
-                print(self.enemies)
+                        print(sp22)
+                        ishenear = True
+                        for i in range(len(sp22) - 1, -1, -1):
+                            pos_x = sp22[i][0]
+                            pos_y = sp22[i][1]
+                            if self.board[pos_y][pos_x] == '@' or self.board[pos_y][pos_x] == 'e':
+                                print(evildude.pos[0], evildude.pos[1])
+                            else:
+                                print(evildude.pos[0], evildude.pos[1])
+                                self.boardshow[evildude.pos[1]][evildude.pos[0]] = '0'
+                                self.board[evildude.pos[1]][evildude.pos[0]] = '.'
+                                evildude.pos = (pos_x, pos_y)
+                                print(pos_x, pos_y)
+                                self.enemies[(pos_x, pos_y)] = evildude
+                                self.board[pos_y][pos_x] = 'e'
+                                self.boardshow[pos_y][pos_x] = 'e'
+                                ishenear = False
+                                break
+                        if ishenear:
+                            self.hero.health -= evildude.damage
+                            self.enemies[(evildude.pos[0], evildude.pos[1])] = evildude
+                    print(self.enemies)
                 for i in range(len(self.boardshow)):
                     for j in range(len(self.boardshow[i])):
-                        if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2':
+                        if self.boardshow[i][j] == 'e' or self.boardshow[i][j] == 'e2'  :
                             if abs(self.playery - i) <= self.weap2range and abs(self.playerx - j) <= self.weap2range:
                                 self.boardshow[i][j] = 'e3'
                             if abs(self.playery - i) <= self.hero.range and abs(self.playerx - j) <= self.hero.range:
@@ -652,8 +652,8 @@ class Gameboard(Board):
                 print('ouch', self.enemies[(cell_coords[0], cell_coords[1])].health)
                 self.butweap1active = False
                 if self.enemies[(cell_coords[0], cell_coords[1])].health <= 0:
-                    self.kolenemies -= 1
                     del self.enemies[(cell_coords[0], cell_coords[1])]
+                    self.kolenemies -= 1
                     self.boardshow[cell_coords[1]][cell_coords[0]] = '0'
                     self.board[cell_coords[1]][cell_coords[0]] = '.'
                 self.get_cell((self.left + 11, self.height * self.cell_size + self.top + 66))
@@ -758,14 +758,13 @@ while running:
             else:
                 sound_gl = True
         board.get_seen(pygame.mouse.get_pos())
-    if board.kolenemies <= 0:
-        print(True)
-        if mapsource == len(levels):
-            running = False
-        else:
-            mapsource += 1
-            board = Gameboard(10, 3, load_level((levels[mapsource][1])))
-
+        if board.kolenemies <= 0:
+            print(True)
+            if mapsource == len(levels):
+                running = False
+            else:
+                mapsource += 1
+                board = Gameboard(10, 3, load_level((levels[mapsource][1])))
 
     screen.fill((160, 160, 160))
     board.render(screen)
