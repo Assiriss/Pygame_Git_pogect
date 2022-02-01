@@ -9,6 +9,7 @@ size = width, height = 800, 500
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
+
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
     try:
@@ -30,6 +31,7 @@ def terminate():
     pygame.quit()
     sys.exit()
 
+
 def opis():
     fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
     screen.blit(fon, (0, 0))
@@ -37,6 +39,8 @@ def opis():
     font2 = pygame.font.Font(None, 50)
     textt = font2.render("ARCADIUM", True, (100, 255, 100))
     screen.blit(textt, (310, 50))
+    esk = pygame.transform.scale(load_image('esk.jpg'), (60, 60))
+    screen.blit(esk, (40, 290))
     hm = pygame.transform.scale(load_image('home.jpg'), (60, 60))
     screen.blit(hm, (40, 130))
     left = pygame.transform.scale(load_image('влево.jpg'), (60, 60))
@@ -45,14 +49,18 @@ def opis():
     screen.blit(up, (360, 130))
     down = pygame.transform.scale(load_image('вниз.jpg'), (60, 60))
     screen.blit(down, (360, 210))
-    home_str = font.render("-выключение музыки", True, (100, 255, 100))
-    screen.blit(home_str,  (110, 150))
-    effect = font.render("-выйти из описания", True, (100, 255, 100))
+    home_str = font.render("-выключение музыки", True, (200, 100, 100))
+    screen.blit(home_str, (110, 150))
+    effect = font.render("-выйти из описания", True, (200, 100, 100))
     screen.blit(effect, (110, 230))
-    magaz = font.render("-открытие магазина", True, (100, 255, 100))
+    magaz = font.render("-открытие магазина", True, (200, 100, 100))
     screen.blit(magaz, (430, 150))
-    vhd = font.render("-выключение эффектов", True, (100, 255, 100))
+    vhd = font.render("-выключение эффектов", True, (200, 100, 100))
     screen.blit(vhd, (430, 230))
+    vhd = font.render("-выключение эффектов", True, (200, 100, 100))
+    screen.blit(vhd, (430, 230))
+    eskk = font.render("-пауза", True, (200, 100, 100))
+    screen.blit(eskk, (110, 310))
     opis = True
     while opis:
         for event in pygame.event.get():
@@ -67,12 +75,20 @@ def opis():
             screen.blit(fon, (0, 0))
             textt = font2.render("ARCADIUM", True, (100, 255, 100))
             screen.blit(textt, (310, 50))
+            font = pygame.font.Font(None, 30)
+            scr = font.render("-описание кнопок на клавиатуре", True, (200, 100, 100))
+            screen.blit(scr, (310, 160))
+            but = font.render("-описание кнопок на экране", True, (200, 100, 100))
+            screen.blit(but, (310, 360))
+            zel = font.render("-описание зелий", True, (200, 100, 100))
+            screen.blit(zel, (310, 260))
         pygame.display.update()
-        clock.tick(FPS)
+        clock.tick(10)
+
 
 def start_screen():
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('заставка звук.mp3'))
-
+    pygame.mixer.music.load('заставка звук.mp3')
+    pygame.mixer.music.play(-1)
 
     fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
     screen.blit(fon, (0, 0))
@@ -92,15 +108,15 @@ def start_screen():
         clock.tick(FPS)
         start_button.draw(350, 130, 'START', start_game)
         quit_button.draw(310, 380, 'Выйти из игры', quit)
-        opis_button.draw(310, 250, 'Описание игры', opis)
+        opis_button.draw(310, 250, 'Описание игры', opis_global)
         clock.tick(60)
+
 
 pygame.init()
 
 
-
 def pause():
-    fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('пауза.jpg'), (width, height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 50)
     text = font.render('PRESS SPASE TO CONTINUE', 1, pygame.Color('black'))
@@ -121,19 +137,140 @@ def pause():
         clock.tick(FPS)
 
 
+def opis_zel():
+    fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 20)
+    font2 = pygame.font.Font(None, 50)
+    textt = font2.render("ARCADIUM", True, (100, 255, 100))
+    screen.blit(textt, (310, 50))
+    esk = pygame.transform.scale(load_image('small.jpg'), (60, 60))
+    screen.blit(esk, (40, 130))
+    oru = pygame.transform.scale(load_image('big.jpg'), (60, 60))
+    screen.blit(oru, (380, 130))
+    hm = pygame.transform.scale(load_image('мана.jpg'), (60, 60))
+    screen.blit(hm, (40, 230))
+    home_str = font.render("-восстанавливает 25% здоровья", True, (200, 100, 100))
+    screen.blit(home_str, (110, 150))
+    effect = font.render("-восстанавливает 50% здоровья", True, (200, 100, 100))
+    magaz = font.render("-восстанавливает 25% маны", True, (200, 100, 100))
+    screen.blit(magaz, (110, 250))
+    screen.blit(effect, (445, 150))
+    font = pygame.font.Font(None, 30)
+    opis = True
+    while opis:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                opis = False
+                fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+                screen.blit(fon, (0, 0))
+                font2 = pygame.font.Font(None, 50)
+                textt = font2.render("ARCADIUM", True, (100, 255, 100))
+                screen.blit(textt, (310, 50))
+                font = pygame.font.Font(None, 30)
+                scr = font.render("-описание кнопок на клавиатуре", True, (200, 100, 100))
+                screen.blit(scr, (310, 160))
+                but = font.render("-описание кнопок на экране", True, (200, 100, 100))
+                screen.blit(but, (310, 360))
+                zel = font.render("-описание зелий", True, (200, 100, 100))
+                screen.blit(zel, (310, 260))
 
-def load_image(name, color_key=None):
-    fullname = os.path.join('data', name)
-    try:
-        image = pygame.image.load(fullname).convert()
-    except pygame.error as error:
-        print(f'при загрузке изображения {name} произошла ошибка: {error}')
-        raise SystemExit(error)
-    if color_key:
-        if color_key == -1:
-            color_key = image.get_at((0, 0))
-        image.set_colorkey(color_key)
-    return image
+        pygame.display.update()
+        clock.tick(10)
+
+
+def opis_skr():
+    fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    font2 = pygame.font.Font(None, 50)
+    esk = pygame.transform.scale(load_image('описание кнопка.png'), (230, 60))
+    screen.blit(esk, (40, 130))
+    oru = pygame.transform.scale(load_image('оружие.png'), (310, 60))
+    screen.blit(oru, (380, 130))
+    hm = pygame.transform.scale(load_image('кнопка.png'), (60, 60))
+    screen.blit(hm, (40, 230))
+    pes = pygame.transform.scale(load_image('песок.jpeg'), (130, 40))
+    screen.blit(pes, (40, 350))
+    gun_2_1 = pygame.transform.scale(load_image('gun_2_1.jpg'), (210, 50))
+    screen.blit(gun_2_1, (380, 250))
+    gun_1_1 = pygame.transform.scale(load_image('gun_1_1.png'), (210, 50))
+    screen.blit(gun_1_1, (380, 350))
+    textt = font.render("-управление ходом", True, (200, 100, 100))
+    screen.blit(textt, (110, 250))
+    textt = font.render("-сделать ход ", True, (200, 100, 100))
+    screen.blit(textt, (180, 360))
+    textt = font.render("-дальний бой", True, (200, 100, 100))
+    screen.blit(textt, (600, 270))
+    textt = font.render("-ближний бой ", True, (200, 100, 100))
+    screen.blit(textt, (600, 370))
+    textt = font2.render("ARCADIUM", True, (100, 255, 100))
+    screen.blit(textt, (310, 50))
+    font = pygame.font.Font(None, 30)
+    opis = True
+    while opis:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                opis = False
+                fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+                screen.blit(fon, (0, 0))
+                font2 = pygame.font.Font(None, 50)
+                textt = font2.render("ARCADIUM", True, (100, 255, 100))
+                screen.blit(textt, (310, 50))
+                font = pygame.font.Font(None, 30)
+                scr = font.render("-описание кнопок на клавиатуре", True, (200, 100, 100))
+                screen.blit(scr, (310, 160))
+                but = font.render("-описание кнопок на экране", True, (200, 100, 100))
+                screen.blit(but, (310, 360))
+                zel = font.render("-описание зелий", True, (200, 100, 100))
+                screen.blit(zel, (310, 260))
+        pygame.display.update()
+        clock.tick(10)
+
+
+def opis_global():
+    fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 50)
+    textt = font.render("ARCADIUM", True, (100, 255, 100))
+    screen.blit(textt, (310, 50))
+    font = pygame.font.Font(None, 30)
+    scr = font.render("-описание кнопок на клавиатуре", True, (200, 100, 100))
+    screen.blit(scr, (310, 160))
+    but = font.render("-описание кнопок на экране", True, (200, 100, 100))
+    screen.blit(but, (310, 360))
+    zel = font.render("-описание зелий", True, (200, 100, 100))
+    screen.blit(zel, (310, 260))
+    button = Button(210, 37, 40)
+    des_button = Button(210, 37, 40)
+    zel_button = Button(210, 37, 40)
+    pause = True
+    while pause:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        keys = pygame.key.get_pressed()
+        button.draw(90, 150, '', opis)
+        des_button.draw(90, 350, '', opis_skr)
+        zel_button.draw(90, 250, '', opis_zel)
+        pygame.display.update()
+        clock.tick(FPS)
+        if keys[pygame.K_LEFT]:
+            pause = False
+            fon = pygame.transform.scale(load_image('fonn.jpg'), (width, height))
+            screen.blit(fon, (0, 0))
+            font2 = pygame.font.Font(None, 50)
+            textt = font2.render("ARCADIUM", True, (100, 255, 100))
+            screen.blit(textt, (310, 50))
 
 
 player = None
@@ -161,7 +298,6 @@ class Button:
         if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height:
             pygame.draw.rect(screen, (125, 125, 125), (x, y, self.width, self.height))
             if click[0] == 1:
-                pygame.mixer.Channel(1).play(pygame.mixer.Sound('кнопка.mp3'))
                 if action is not None:
                     if action == quit:
                         pygame.quit()
@@ -173,14 +309,39 @@ class Button:
             pygame.draw.rect(screen, (175, 175, 175), (x, y, self.width, self.height))
         font = pygame.font.Font(None, self.font)
         text = font.render(str(message), True, (195, 195, 195))
-        screen.blit(text, (x+6, y+6))
+        screen.blit(text, (x + 6, y + 6))
+
 
 is_inventory = False
 running = True
 sound = True
 
+
+def win():
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('победа.mp3'))
+    pygame.mixer.Channel(0).stop()
+    fon = pygame.transform.scale(load_image('win.jpg'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 70)
+    text = font.render('YOU WIN', 1, pygame.Color('Green'))
+    screen.blit(text, (300, 120))
+    start_button = Button(135, 37, 40)
+    quit_button = Button(210, 37, 40)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        keys = pygame.key.get_pressed()
+        pygame.display.update()
+        quit_button.draw(310, 380, 'Выйти из игры', quit)
+        start_button.draw(350, 200, 'RESTART', start_screen)
+        clock.tick(FPS)
+
+
 def died():
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('смерть.mp3'))
+    pygame.mixer.Channel(0).stop()
     fon = pygame.transform.scale(load_image('пауза.jpg'), (width, height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 70)
@@ -196,8 +357,9 @@ def died():
         keys = pygame.key.get_pressed()
         pygame.display.update()
         quit_button.draw(310, 380, 'Выйти из игры', quit)
-        start_button.draw(350, 200, 'RESTART', start_game)
+        start_button.draw(350, 200, 'RESTART', start_screen)
         clock.tick(FPS)
+
 
 def start_game():
     global is_inventory, sound
@@ -224,12 +386,13 @@ def start_game():
     sound_gl = True
     while running:
         for event in pygame.event.get():
-            if board.hero.health <=0:
+            if board.hero.health <= 0:
                 died()
             if sound_gl == True and a == 0:
+                pygame.mixer.music.stop()
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('главная музыка.mp3'))
                 a = 1
-            elif sound_gl == False:
+            elif not sound_gl:
                 pygame.mixer.Channel(0).stop()
                 a = 0
             keys = pygame.key.get_pressed()
@@ -240,17 +403,17 @@ def start_game():
             if keys[pygame.K_ESCAPE]:
                 pause()
             if keys[pygame.K_UP]:
-                if is_inventory == False:
+                if not is_inventory:
                     is_inventory = True
                 else:
                     is_inventory = False
             if keys[pygame.K_DOWN]:
-                if sound == True:
+                if sound:
                     sound = False
                 else:
                     sound = True
             if keys[pygame.K_HOME]:
-                if sound_gl == True:
+                if sound_gl:
                     sound_gl = False
                 else:
                     sound_gl = True
@@ -258,6 +421,7 @@ def start_game():
             if board.kolenemies <= 0:
                 print(True)
                 if mapsource == len(levels):
+                    win()
                     running = False
                 else:
                     mapsource += 1
@@ -266,6 +430,7 @@ def start_game():
         board.render(screen)
         pygame.display.flip()
     pygame.quit()
+
 
 class Board:
     # создание поля
@@ -314,7 +479,7 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.allhealth = 100
         self.range = 1
-        self.damage = 50
+        self.damage = 20
         self.defend = 2
 
 
@@ -360,7 +525,7 @@ class Gameboard(Board):
                         newenem.allhealth = 100
                         newenem.health = newenem.health
                         newenem.range = 1
-                        newenem.damage = 20
+                        newenem.damage = 10
                         newenem.defend = 1
                     self.enemies[(zi, i)] = newenem
                     self.boardshow[i][zi] = 'e'
@@ -412,10 +577,10 @@ class Gameboard(Board):
         self.energybar = 100
         self.energyused = 100
         self.interheight = 80
-        self.smalll = 5
-        self.bigg = 5
-        self.mana = 5
-        self.money = 600
+        self.smalll = 0
+        self.bigg = 0
+        self.mana = 0
+        self.money = 17
         self.gun = 1
 
     def render(self, screen):
@@ -423,7 +588,7 @@ class Gameboard(Board):
                                                    self.height * self.cell_size))
         for j in range(0, self.height * self.cell_size, self.cell_size):
             for i in range(0, self.width * self.cell_size, self.cell_size):
-                if self.butgoactive and (self.boardshow[j // self.cell_size][i // self.cell_size] == 'b' or \
+                if self.butgoactive and (self.boardshow[j // self.cell_size][i // self.cell_size] == 'b' or
                                          self.boardshow[j // self.cell_size][i // self.cell_size] == '@'):
                     pygame.draw.rect(screen, (0, 128, 128),
                                      (i + self.left, j + self.top, self.cell_size, self.cell_size))
@@ -454,12 +619,16 @@ class Gameboard(Board):
                     pygame.draw.rect(screen, (255, 215, 0),
                                      (i + self.left, j + self.top, self.cell_size, self.cell_size))
                 if self.board[j // self.cell_size][i // self.cell_size] == '@':
-                    pygame.draw.circle(screen, (255, 0, 255), (i + self.left + self.cell_size // 2, j + self.top +
-                                                               self.cell_size // 2), 25)
+                    gg = pygame.transform.scale(load_image('гг.png'), (50, 50))
+                    gg.set_colorkey((0, 0, 0))
+                    screen.blit(gg, (i + self.left + self.cell_size // 2 - 22, j + self.top +
+                                     self.cell_size // 2 - 22))
                 if self.board[j // self.cell_size][i // self.cell_size] != '@' and \
                         self.board[j // self.cell_size][i // self.cell_size] != '.':
-                    pygame.draw.circle(screen, (0, 255, 255), (i + self.left + self.cell_size // 2, j + self.top +
-                                                               self.cell_size // 2), 25)
+                    gg = pygame.transform.scale(load_image('нг.png'), (50, 50))
+                    gg.set_colorkey((0, 0, 0))
+                    screen.blit(gg, (i + self.left + self.cell_size // 2 - 22, j + self.top +
+                                     self.cell_size // 2 - 25))
                 pygame.draw.rect(screen, (255, 255, 255),
                                  (i + self.left, j + self.top, self.cell_size, self.cell_size), 1)
         pygame.draw.rect(screen, (170, 147, 10), (self.left, self.top, self.width * self.cell_size,
@@ -478,7 +647,7 @@ class Gameboard(Board):
             zel_invent1 = pygame.transform.scale(load_image('кнопка.png'), (50, 50))
             zel_invent1.set_colorkey((0, 0, 0))
             screen.blit(zel_invent1, (self.left + self.butgocord, self.height * self.cell_size + self.top +
-                                                   25, 50, 50))
+                                      25, 50, 50))
 
         else:
             zel_invent1 = pygame.transform.scale(load_image('кнопка_2.png'), (50, 50))
@@ -489,7 +658,7 @@ class Gameboard(Board):
             zel_invent1 = pygame.transform.scale(load_image('песок.jpeg'), (100, 10))
             zel_invent1.set_colorkey((0, 0, 0))
             screen.blit(zel_invent1, (self.left + 10, self.height * self.cell_size + self.top + 65,
-                                                    self.healthbar, 10))
+                                      self.healthbar, 10))
         else:
             zel_invent1 = pygame.transform.scale(load_image('песок_2.jpg'), (100, 10))
             zel_invent1.set_colorkey((0, 0, 0))
@@ -508,17 +677,16 @@ class Gameboard(Board):
                                       self.top +
                                       25, 200, 50))
         if not self.butweap2active:
-            zel_invent1 = pygame.transform.scale(load_image('gun_2_1.png'), (200, 50))
-            zel_invent1.set_colorkey((0, 0, 0))
-            screen.blit(zel_invent1, (self.left + self.butweap2cord, self.height * self.cell_size + self.top +
-                              25, 200, 50))
-
-        else:
-            zel_invent1 = pygame.transform.scale(load_image('gun_2_2.png'), (200, 50))
+            zel_invent1 = pygame.transform.scale(load_image('gun_2_1.jpg'), (200, 50))
             zel_invent1.set_colorkey((0, 0, 0))
             screen.blit(zel_invent1, (self.left + self.butweap2cord, self.height * self.cell_size + self.top +
                                       25, 200, 50))
 
+        else:
+            zel_invent1 = pygame.transform.scale(load_image('gun_2_2.jpg'), (200, 50))
+            zel_invent1.set_colorkey((0, 0, 0))
+            screen.blit(zel_invent1, (self.left + self.butweap2cord, self.height * self.cell_size + self.top +
+                                      25, 200, 50))
 
         pygame.draw.rect(screen, (190, 190, 190), (500, 20, 60, 60))
         pygame.draw.rect(screen, (190, 190, 190), (570, 20, 60, 60))
@@ -539,20 +707,19 @@ class Gameboard(Board):
         screen.blit(zel3, (640, 20))
         kol_vo_zel1 = font.render(str(self.bigg), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel1, (597, 68))
-        kol_vo_zel2 = font.render(str((self.smalll)), 1, pygame.Color('white'))
+        kol_vo_zel2 = font.render(str(self.smalll), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel2, (527, 68))
         kol_vo_zel3 = font.render(str(self.mana), 1, pygame.Color('white'))
         screen.blit(kol_vo_zel3, (667, 68))
 
-
-        if is_inventory == True:
+        if is_inventory:
             pygame.draw.rect(screen, (220, 225, 227), (28, 10, 400, 100))
             font1 = pygame.font.Font(None, 30)
             font2 = pygame.font.Font(None, 20)
             kol_vo_money = font1.render(f'{self.money}$', 1, pygame.Color('black'))
             text_small = font2.render('Artensia', 1, pygame.Color('black'))
             text_big = font2.render('Doxicide', 1, pygame.Color('black'))
-            text_mana= font2.render('Doxicide', 1, pygame.Color('black'))
+            text_mana = font2.render('Doxicide', 1, pygame.Color('black'))
             screen.blit(kol_vo_money, (30, 15))
             screen.blit(text_small, (98, 52))
             screen.blit(text_big, (203, 52))
@@ -564,8 +731,7 @@ class Gameboard(Board):
             screen.blit(text_big_cost, (223, 66))
             screen.blit(text_mana_cost, (331, 66))
 
-        if is_inventory == True:
-
+        if is_inventory:
             zel_invent1 = pygame.transform.scale(load_image('small.jpg'), (35, 35))
             zel_invent2 = pygame.transform.scale(load_image('big.jpg'), (35, 35))
             zel_invent3 = pygame.transform.scale(load_image('мана.jpg'), (35, 35))
@@ -582,7 +748,6 @@ class Gameboard(Board):
             screen.blit(plus, (115, 20))
             screen.blit(plus, (220, 20))
             screen.blit(plus, (325, 20))
-
 
     def get_cell(self, mouse_pos):
         print(mouse_pos[0], mouse_pos[1])
@@ -700,8 +865,7 @@ class Gameboard(Board):
         elif mouse_pos[0] in range(
                 self.left + self.butweap2cord,
                 self.left + self.butweap2cord + 200) and mouse_pos[1] in range(
-            self.height * self.cell_size + self.top +
-            25, self.height * self.cell_size + self.top + 75):
+            self.height * self.cell_size + self.top + 25, self.height * self.cell_size + self.top + 75):
             self.butweap1active = False
             self.butgoactive = False
             self.butnextactive = False
@@ -728,7 +892,7 @@ class Gameboard(Board):
                     else:
                         self.hero.health = 100
             else:
-                if sound == True:
+                if sound:
                     pygame.mixer.music.load('ошибка.mp3')
                     pygame.mixer.music.play(0)
         elif mouse_pos[0] in range(570, 631) and mouse_pos[1] in range(20, 81):
@@ -736,7 +900,7 @@ class Gameboard(Board):
             string_rendered_big = font.render(str(self.bigg), 1, pygame.Color('white'))
             screen.blit(string_rendered_big, (578, 78))
             if self.bigg > 0:
-                if sound == True:
+                if sound:
                     pygame.mixer.music.load('большое зелье.mp3')
                     pygame.mixer.music.play(0)
                 self.bigg -= 1
@@ -747,7 +911,7 @@ class Gameboard(Board):
                         self.hero.health = 100
 
             else:
-                if sound == True:
+                if sound:
                     pygame.mixer.music.load('ошибка.mp3')
                     pygame.mixer.music.play(0)
 
@@ -756,7 +920,7 @@ class Gameboard(Board):
             string_rendered_big = font.render(str(self.mana), 1, pygame.Color('white'))
             screen.blit(string_rendered_big, (578, 78))
             if self.mana > 0:
-                if sound == True:
+                if sound:
                     pygame.mixer.music.load('мана звук.mp3')
                     pygame.mixer.music.play(0)
                 self.mana -= 1
@@ -764,29 +928,29 @@ class Gameboard(Board):
                     if self.energyused < 50:
                         self.energyused += 50
                     else:
-                        self.energyused  = 100
+                        self.energyused = 100
 
             else:
-                if sound == True:
+                if sound:
                     pygame.mixer.music.load('ошибка.mp3')
                     pygame.mixer.music.play(0)
 
-        elif is_inventory == True and mouse_pos[0] in range(107, 141) and mouse_pos[1] in range(14, 48):
-            if sound == True:
+        elif is_inventory and mouse_pos[0] in range(107, 141) and mouse_pos[1] in range(14, 48):
+            if sound:
                 pygame.mixer.music.load('покупка.mp3')
                 pygame.mixer.music.play(0)
             if self.money > 3:
                 self.money -= 3
                 self.smalll += 1
-        elif is_inventory == True and mouse_pos[0] in range(213, 247) and mouse_pos[1] in range(15, 48):
-            if sound == True:
+        elif is_inventory and mouse_pos[0] in range(213, 247) and mouse_pos[1] in range(15, 48):
+            if sound:
                 pygame.mixer.music.load('покупка.mp3')
                 pygame.mixer.music.play(0)
             if self.money > 5:
                 self.money -= 5
                 self.bigg += 1
-        elif is_inventory == True and mouse_pos[0] in range(319, 353) and mouse_pos[1] in range(15, 48):
-            if sound == True:
+        elif is_inventory and mouse_pos[0] in range(319, 353) and mouse_pos[1] in range(15, 48):
+            if sound:
                 pygame.mixer.music.load('покупка.mp3')
                 pygame.mixer.music.play(0)
             if self.money > 4:
